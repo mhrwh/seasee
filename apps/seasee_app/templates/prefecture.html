@@ -22,7 +22,7 @@
     }
 
     function initMap() {
-        const beach = {{data|tojson}};
+        const beach = {{data|tojson}}; //(仮)dataという名前で送られてくると想定　想定しているデータ{'prefecture' : '沖縄', 'beaches': [{'name': '底地ビーチ', 'address': '沖縄県石垣市川平185-1', 'open': True}, {'name': '万座ビーチ', 'address': '沖縄県国頭郡恩納村字瀬良垣2260番地', 'open': False},{'name': '喜瀬ビーチ', 'address': '沖縄県名護市字喜瀬115番地2', 'open': True}]}
 
         var addresses = [beach.prefecture]; //map生成に使う位置情報
         for(let i=0; i<beach.beaches.length; i++){
