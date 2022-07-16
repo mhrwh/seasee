@@ -24,7 +24,7 @@ class BeachSeeder(Seeder):
                 "prefecture": "神奈川県",
                 "address": "神奈川県茅ヶ崎市中海岸4丁目12986-5",
                 "start_date": date(2021, random.randint(5, 8), random.randint(1, 30)),
-                "end_date": date(2021, random.randint(5, 8), random.randint(1, 30)),
+                "end_date": date(2021, random.randint(8, 10), random.randint(1, 30)),
                 "created_at": datetime.now(),
             },
         )

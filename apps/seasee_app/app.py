@@ -46,6 +46,7 @@ seeder.init_app(app, db)
 
 
 # URLと実行する関数をマッピングする
-@app.route("/index")
+@app.route("/")
 def index():
-    return render_template("index.html")
+    beaches = Beach.query.all()
+    return render_template("index.html", beaches=beaches)
