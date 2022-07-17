@@ -101,7 +101,7 @@ def show_prefecture(prefecture_id):
     )
     json_data = json.loads(data.data)
     print(json_data)
-    return render_template("prefecture.html", data=json_data)
+    return render_template("prefecture.html", data=json_data, id=prefecture_id)
 
 
 if __name__ == "__main__":
