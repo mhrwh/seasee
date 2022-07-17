@@ -10,6 +10,7 @@ from apps.seasee_app import db
 from apps.seasee_app.models import Beach, BeachSchema
 import json
 from apps.seasee_app.prefectures import pre_list
+import geocoder
 
 # # SQLAlchemyをインスタンス化する
 # db = SQLAlchemy()
@@ -35,7 +36,21 @@ db.init_seeder(app)
 # # Migrateとアプリを連携する
 # Migrate(app, db)
 
+
 # seeder.init_app(app, db)
+def get_latlng(address):
+    ret = geocoder.osm(address, timeout=3.0)
+    if ret.latlng:
+        return ret.latlng
+    else:
+        return "Error"
+
+
+def pre_strip(p):
+    if p == 0:
+        return "北海道"
+    else:
+        return pre_list[p][:-1]
 
 
 def prefecture(i):
@@ -50,8 +65,9 @@ def prefecture(i):
     if count_all_beach:
         ratio = count_open / count_all_beach
     data = {
-        "prefecture": pre_list[i],
+        "prefecture": pre_strip(i),
         "prefecture_id": i + 1,
+        "prefecture_latlng": get_latlng(pre_list[i]),
         "ratio": ratio,
         "beaches": beaches_schema.dump(beaches),
     }
@@ -69,6 +85,7 @@ def index():
         }
     )
     json_data = json.loads(data.data)
+    print(json_data)
     return render_template("index.html", data=json_data)
 
 
