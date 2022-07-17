@@ -53,6 +53,13 @@ def pre_strip(p):
         return pre_list[p][:-1]
 
 
+def get_id(i):
+    if i < 10:
+        return f"0{str(i+1)}"
+    else:
+        return str(i + 1)
+
+
 def prefecture(i):
     beaches = Beach.query.filter_by(prefecture=pre_list[i]).all()
     beaches_schema = BeachSchema(many=True)
@@ -66,7 +73,7 @@ def prefecture(i):
         ratio = count_open / count_all_beach
     data = {
         "prefecture": pre_strip(i),
-        "prefecture_id": i + 1,
+        "prefecture_id": get_id(i),
         "prefecture_latlng": get_latlng(pre_list[i]),
         "ratio": ratio,
         "zoom_ratio": zoom_list[i],
