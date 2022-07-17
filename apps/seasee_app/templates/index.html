@@ -4,7 +4,8 @@
 <div id="regions_div" class="mx-auto" style="width: 900px; height: 500px;"></div>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-    const prefecture_data ={{data|tojson}}; //(仮)dataという名前で送られてくると想定　想定しているデータ[{'prefecture' : '北海道', 'ratio': 0.5, 'beaches': ['白浜海岸海水浴場', '石狩浜海水浴場',]}, {'prefecture' : '青森', 'ratio': 0.75, 'beaches': ['白浜海水浴場']}]
+    const data_form_db ={{data|tojson}}; 
+    const prefecture_data = data_form_db.prefectures;
 
     google.charts.load('current', { //geochartを読み込んで描画
         'packages':[
