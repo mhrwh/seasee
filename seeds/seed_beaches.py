@@ -24,12 +24,8 @@ class BeachSeeder(Seeder):
                 "name": generator.String("[a-z]\d{4}\c{3}"),
                 "prefecture": pre_list[random.randint(0, 46)],
                 "address": "神奈川県茅ヶ崎市中海岸",
-                "start_date": date(
-                    2021, random.randint(5, 7), generator.Integer(start=1, end=30)
-                ),
-                "end_date": date(
-                    2021, random.randint(8, 10), generator.Integer(start=1, end=30)
-                ),
+                "start_date": date(2021, random.randint(5, 7), random.randint(1, 30)),
+                "end_date": date(2021, random.randint(8, 10), random.randint(1, 30)),
                 "created_at": datetime.now(),
             },
         )

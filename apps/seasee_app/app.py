@@ -41,13 +41,18 @@ db.init_seeder(app)
 def prefecture(i):
     beaches = Beach.query.filter_by(prefecture=pre_list[i]).all()
     beaches_schema = BeachSchema(many=True)
-    print(beaches_schema.dump(beaches))
-    # count_open = "dummy"
-    # count_all_beach = Beach.query.filter_by(prefecture=pre_list[i]).count()
+    ratio = 0
+    count_open = 0
+    for beach in beaches_schema.dump(beaches):
+        if beach["is_open"]:
+            count_open += 1
+    count_all_beach = Beach.query.filter_by(prefecture=pre_list[i]).count()
+    if count_all_beach:
+        ratio = count_open / count_all_beach
     data = {
         "prefecture": pre_list[i],
         "prefecture_id": i + 1,
-        "ratio": 1,
+        "ratio": ratio,
         "beaches": beaches_schema.dump(beaches),
     }
     return data
