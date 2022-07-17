@@ -1,16 +1,19 @@
 from pathlib import Path
 
 # Flaskクラスをimportする
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-from flask_seeder import FlaskSeeder
+# from flask_migrate import Migrate
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_seeder import FlaskSeeder
+from apps.seasee_app import db
+from apps.seasee_app.models import Beach, BeachSchema
+import json
+from apps.seasee_app.prefectures import pre_list
 
-# SQLAlchemyをインスタンス化する
-db = SQLAlchemy()
-seeder = FlaskSeeder()
+# # SQLAlchemyをインスタンス化する
+# db = SQLAlchemy()
+# seeder = FlaskSeeder()
 
 # Flaskクラスをインスタンス化する
 app = Flask(__name__)
@@ -23,30 +26,46 @@ app.config.from_mapping(
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
 )
 
+db.init_db(app)
+db.init_ma(app)
+db.init_seeder(app)
 
-class Beach(db.Model):
-    # テーブル名を指定する
-    __tablename__ = "Beaches"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, index=True)
-    prefecture = db.Column(db.String)
-    address = db.Column(db.String)
-    start_date = db.Column(db.Date, nullable=True)
-    end_date = db.Column(db.Date, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+# # SQLAlchemyとアプリを連携する
+# db.init_app(app)
+# # Migrateとアプリを連携する
+# Migrate(app, db)
+
+# seeder.init_app(app, db)
 
 
-# SQLAlchemyとアプリを連携する
-db.init_app(app)
-# Migrateとアプリを連携する
-Migrate(app, db)
-
-seeder.init_app(app, db)
+def prefecture(i):
+    beaches = Beach.query.filter_by(prefecture=pre_list[i]).all()
+    beaches_schema = BeachSchema(many=True)
+    print(beaches_schema.dump(beaches))
+    # count_open = "dummy"
+    # count_all_beach = Beach.query.filter_by(prefecture=pre_list[i]).count()
+    data = {
+        "prefecture": pre_list[i],
+        "prefecture_id": i + 1,
+        "ratio": 1,
+        "beaches": beaches_schema.dump(beaches),
+    }
+    return data
 
 
 # URLと実行する関数をマッピングする
 @app.route("/")
 def index():
-    beaches = Beach.query.all()
-    return render_template("index.html", beaches=beaches)
+    prefectures = [prefecture(i) for i in range(47)]
+    data = jsonify(
+        {
+            "status": "ok",
+            "prefectures": prefectures,
+        }
+    )
+    json_data = json.loads(data.data)
+    return render_template("index.html", data=json_data)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
