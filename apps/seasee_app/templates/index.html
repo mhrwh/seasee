@@ -1,19 +1,51 @@
 {% extends "base.html" %}
-{% block title %}ユーザーの一覧{% endblock %}
+{% block title %}seasee{% endblock %}
 {% block content %}
-
-<p id="input_from_python">{{ data }}</p>
+<div id="regions_div" class="mx-auto" style="width: 900px; height: 500px;"></div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-  // id属性で要素を取得
-  let json = {{ data | tojson }}
-  var textbox_element = document.getElementById('input_from_python');
-  console.log(json);
+    const prefecture_data ={{data|tojson}}; //(仮)dataという名前で送られてくると想定　想定しているデータ[{'prefecture' : '北海道', 'ratio': 0.5, 'beaches': ['白浜海岸海水浴場', '石狩浜海水浴場',]}, {'prefecture' : '青森', 'ratio': 0.75, 'beaches': ['白浜海水浴場']}]
 
-  // 新しいHTML要素を作成
-  var new_element = document.createElement('p');
-  new_element.textContent = json.beaches[0].name;
-
-  // 指定した要素の中の末尾に挿入
-  textbox_element.appendChild(new_element);
+    google.charts.load('current', { //geochartを読み込んで描画
+        'packages':[
+            'geochart'
+        ],
+        'mapsApiKey': '{geochartのAPIキーを入れてください}'
+    });
+    google.charts.setOnLoadCallback(drawRegionsMap);
+    // クリック時の関数
+    function selectHandler(reg) {
+        console.log(reg.region);
+        window.location.href = '/prefectures/' + reg.region;
+    }
+    function drawRegionsMap() {
+        const codes = [ //データの型定義　Prefecture:都道府県の識別子(北海道以外は都府県を抜いた名前でなくてはならない)　Value:色分けに使われる　{role: 'tooltip', p:{html:true}}:ホバー情報の内容(htmlでかける)
+        ['Prefecture', 'Value', {role: 'tooltip', p:{html:true}}]
+        ];
+        for(let i=0; i<prefecture_data.length; i++){ //都道府県のデータを追加
+            let pre = [{v:prefecture_data[i].prefecture}, prefecture_data[i].ratio, prefecture_data[i].beaches[0]];
+            codes.push(pre);
+        }
+        
+        const data = google.visualization.arrayToDataTable(codes);
+        const options = { //表示される地図のオプション
+            defaultColor:'#3CB371',
+            region: 'JP',
+            resolution: 'provinces',
+            colorAxis:{
+                colors:['white','red'],
+                minValue: 0,
+                maxValue:1
+            },
+            tooltip: {
+                isHtml: true
+            }
+        };
+        const chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+        google.visualization.events.addListener(chart, 'regionClick', selectHandler);
+        chart.draw(data, options);
+    }
+    document.getElementById('regions_div').addEventListener('mouseover', function (e){
+    })
 </script>
 {% endblock %}
