@@ -31,6 +31,7 @@
 
         var latlng = []; //緯度経度の値をセット
         var marker = []; //マーカーの位置情報をセット
+        var infoWindow = [];
         var myLatLng; //地図の中心点をセット用
         var geocoder;
         geocoder = new google.maps.Geocoder();
@@ -73,17 +74,24 @@
                         }
                     });
                 }
+                infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+                    content: '<div class="sample">' + beach.beaches[i].name + '</div>' // 吹き出しに表示する内容
+                });
+                marker[i+1].addListener('click', function() { // マーカーをクリックしたとき
+                    infoWindow[i].open(map, marker[i+1]); // 吹き出しの表示
+                });
             }
             myLatLng = latlng[0]; //最初の住所を地図の中心点に設定
             var opt = {
                 center: myLatLng, // 地図の中心を指定
-                zoom: 10 // 地図のズームを指定
+                zoom:7,
+                draggable: false // 地図のズームを指定
             };
             map.setOptions(opt); //オプションをmapにセット
             
         }
-
-    };
+    }
+    
     </script>
 </body>
 
