@@ -36,8 +36,8 @@
         let zoom_level;
         var latlng = []; //緯度経度の値をセット
         var marker = []; //マーカーの位置情報をセット
-        var markerData = [];
-        var infoWindow = [];
+        var markerData = []; //各マーカーのデータ 
+        var infoWindow = []; //吹き出しの情報
 
         function initMap() {
             const data_from_db = {{data|tojson}}; 
@@ -54,11 +54,10 @@
                 }
             }
 
-            for(let i=0; i<beaches.length; i++){
+            for(let i=0; i<beaches.length; i++){ //マーカーのデータを格納
                 data ={'name': beaches[i].name, lat: beaches[i].latlng[0], lng: beaches[i].latlng[1]}
                 markerData.push(data);
             }
-            console.log(markerData)
 
             var map = new google.maps.Map(document.getElementById('map')); //地図を作成
             
@@ -76,7 +75,7 @@
             }
 
             for(let i=0; i<beaches.length; i++){
-                if(!beaches[i].is_open){
+                if(!beaches[i].is_open){ //海開きしていないものを変更
                     marker[i].setOptions({
                         icon: {
                             url: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|6699cc|000000'// マーカーの画像を変更
