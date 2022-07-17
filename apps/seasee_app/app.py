@@ -90,5 +90,19 @@ def index():
     return render_template("index.html", data=json_data)
 
 
+@app.route("/prefectures/<prefecture_id>")
+def show_prefecture(prefecture_id):
+    prefectures = [prefecture(i) for i in range(47)]
+    data = jsonify(
+        {
+            "status": "ok",
+            "prefectures": prefectures,
+        }
+    )
+    json_data = json.loads(data.data)
+    print(json_data)
+    return render_template("prefecture.html", data=json_data)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
