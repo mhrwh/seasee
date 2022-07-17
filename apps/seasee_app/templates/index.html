@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 {% block title %}ユーザーの一覧{% endblock %}
 {% block content %}
-<ul>
 
-  {% for beach in beaches %}
+<p id="input_from_python">{{ data }}</p>
+<script>
+  // id属性で要素を取得
+  let json = {{ data | tojson }}
+  var textbox_element = document.getElementById('input_from_python');
+  console.log(json);
 
-  <li>{{ beach.name }}</li>
+  // 新しいHTML要素を作成
+  var new_element = document.createElement('p');
+  new_element.textContent = json.beaches[0].name;
 
-  {% endfor %}
-
-</ul>
+  // 指定した要素の中の末尾に挿入
+  textbox_element.appendChild(new_element);
+</script>
 {% endblock %}
