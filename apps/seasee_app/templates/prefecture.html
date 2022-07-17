@@ -31,70 +31,73 @@
             initMap();
         }
 
-        function initMap() {
-            const beach = {{ data| tojson
-        }}; //(仮)dataという名前で送られてくると想定　想定しているデータ{'prefecture' : '沖縄', 'beaches': [{'name': '底地ビーチ', 'address': '沖縄県石垣市川平185-1', 'open': True}, {'name': '万座ビーチ', 'address': '沖縄県国頭郡恩納村字瀬良垣2260番地', 'open': False},{'name': '喜瀬ビーチ', 'address': '沖縄県名護市字喜瀬115番地2', 'open': True}]}
-        console.log(beach);
-        var addresses = [beach.prefecture]; //map生成に使う位置情報
-        for (let i = 0; i < beach.beaches.length; i++) {
-            addresses.push(beach.beaches[i].address);
-        }
-
+        let beaches;
+        let prefecture_latlng;
+        let zoom_level;
         var latlng = []; //緯度経度の値をセット
         var marker = []; //マーカーの位置情報をセット
-        var myLatLng; //地図の中心点をセット用
-        var geocoder;
-        geocoder = new google.maps.Geocoder();
+        var markerData = [];
+        var infoWindow = [];
 
-        var map = new google.maps.Map(document.getElementById('map')); //地図を作成
+        function initMap() {
+            const data_from_db = {{data|tojson}}; 
+            const id_from_geochart = {{id|tojson}};
+            console.log(data_from_db)
+            
+            const prefecture_id = id_from_geochart.match(/\d+/g);
 
-        geo(aftergeo);
-
-        function geo(callback) {
-            var cRef = addresses.length;
-            for (var i = 0; i < addresses.length; i++) {
-                (function (i) {
-                    geocoder.geocode({ 'address': addresses[i] },
-                        function (results, status) { // 結果
-                            if (status === google.maps.GeocoderStatus.OK) { // ステータスがOKの場合
-                                latlng[i] = results[0].geometry.location; // マーカーを立てる位置をセット
-                                if (i != 0) { //先頭は都道府県名なので除外
-                                    marker[i] = new google.maps.Marker({
-                                        position: results[0].geometry.location, // マーカーを立てる位置を指定
-                                        map: map // マーカーを立てる地図を指定
-                                    });
-                                }
-                            } else { // 失敗した場合
-                            }
-                            if (--cRef <= 0) {
-                                callback(); //全て取得できたらaftergeo実行
-                            }
-                        }
-                    );
-                })(i);
+            for(let i=0; i<data_from_db.prefectures.length; i++){ //都道府県の各データを取得
+                if(data_from_db.prefectures[i].prefecture_id==prefecture_id){
+                    beaches = data_from_db.prefectures[i].beaches;
+                    prefecture_latlng = data_from_db.prefectures[i].prefecture_latlng;
+                    zoom_level = data_from_db.prefectures[i].zoom_ratio;
+                }
             }
-        }
 
-        function aftergeo() {
-            for (let i = 0; i < beach.beaches.length; i++) {
-                if (!beach.beaches[i].open) {
-                    marker[i + 1].setOptions({
+            for(let i=0; i<beaches.length; i++){
+                data ={'name': beaches[i].name, lat: beaches[i].latlng[0], lng: beaches[i].latlng[1]}
+                markerData.push(data);
+            }
+            console.log(markerData)
+
+            var map = new google.maps.Map(document.getElementById('map')); //地図を作成
+            
+            for (var i = 0; i < markerData.length; i++) {
+                markerLatLng = new google.maps.LatLng({lat: markerData[i]['lat'], lng: markerData[i]['lng']}); // 緯度経度のデータ作成
+                marker[i] = new google.maps.Marker({ // マーカーの追加
+                    position: markerLatLng, // マーカーを立てる位置を指定
+                    map: map // マーカーを立てる地図を指定
+                });
+            
+                infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+                    content: '<div class="sample">' + beaches[i].name + '</div>' // 吹き出しに表示する内容
+                });
+                markerEvent(i); // マーカーにクリックイベントを追加
+            }
+
+            for(let i=0; i<beaches.length; i++){
+                if(!beaches[i].is_open){
+                    marker[i].setOptions({
                         icon: {
                             url: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=X|6699cc|000000'// マーカーの画像を変更
                         }
                     });
                 }
             }
-            myLatLng = latlng[0]; //最初の住所を地図の中心点に設定
+            myLatLng = new google.maps.LatLng({lat: prefecture_latlng[0], lng: prefecture_latlng[1]}); // 中心地の緯度経度のデータ作成
             var opt = {
                 center: myLatLng, // 地図の中心を指定
-                zoom: 10 // 地図のズームを指定
+                zoom: zoom_level // 地図のズームを指定
             };
             map.setOptions(opt); //オプションをmapにセット
+        };
 
+        // マーカーにクリックイベントを追加
+        function markerEvent(i) {
+            marker[i].addListener('click', function() { // マーカーをクリックしたとき
+                infoWindow[i].open(map, marker[i]); // 吹き出しの表示
+            });
         }
-
-    };
     </script>
 </body>
 
