@@ -4,7 +4,8 @@
 <div id="regions_div" class="mx-auto" style="width: 900px; height: 500px;"></div>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script>
-    const prefecture_data ={{data|tojson}}; //(仮)dataという名前で送られてくると想定　想定しているデータ[{'prefecture' : '北海道', 'ratio': 0.5, 'beaches': ['白浜海岸海水浴場', '石狩浜海水浴場',]}, {'prefecture' : '青森', 'ratio': 0.75, 'beaches': ['白浜海水浴場']}]
+    const data_form_db ={{data|tojson}}; 
+    const prefecture_data = data_form_db.prefectures;
 
     google.charts.load('current', { //geochartを読み込んで描画
         'packages':[
@@ -14,16 +15,22 @@
     });
     google.charts.setOnLoadCallback(drawRegionsMap);
     // クリック時の関数
-    function selectHandler(reg) {
-        console.log(reg.region);
-        window.location.href = '/prefectures/' + reg.region;
+    function selectHandler(reg) { //外国と海なし県を除外
+        if (reg.region!='CN'&&reg.region!='MN'&&reg.region!='KP'&&reg.region!='RU'&&reg.region!='KR'&&reg.region!='TW'&&reg.region!='JP-09'&&reg.region!='JP-10'&&reg.region!='JP-11'&&reg.region!='JP-19'&&reg.region!='JP-20'&&reg.region!='JP-21'&&reg.region!='JP-25'&&reg.region!='JP-29'){
+            window.location.href = '/prefectures/' + reg.region;
+        }
     }
     function drawRegionsMap() {
         const codes = [ //データの型定義　Prefecture:都道府県の識別子(北海道以外は都府県を抜いた名前でなくてはならない)　Value:色分けに使われる　{role: 'tooltip', p:{html:true}}:ホバー情報の内容(htmlでかける)
         ['Prefecture', 'Value', {role: 'tooltip', p:{html:true}}]
         ];
         for(let i=0; i<prefecture_data.length; i++){ //都道府県のデータを追加
-            let pre = [{v:prefecture_data[i].prefecture}, prefecture_data[i].ratio, prefecture_data[i].beaches[0]];
+            let tip = '';
+            for(let j=0; j<prefecture_data[i].beaches.length; j++){
+                tip += '<p> ' + prefecture_data[i].beaches[j].name + '<p/>';
+            }
+            console.log(tip)
+            let pre = [{v:prefecture_data[i].prefecture}, prefecture_data[i].ratio, tip];
             codes.push(pre);
         }
         
