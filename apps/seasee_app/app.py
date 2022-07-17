@@ -9,7 +9,7 @@ from flask import Flask, render_template, jsonify
 from apps.seasee_app import db
 from apps.seasee_app.models import Beach, BeachSchema
 import json
-from apps.seasee_app.prefectures import pre_list
+from apps.seasee_app.prefectures import pre_list, zoom_list
 import geocoder
 
 # # SQLAlchemyをインスタンス化する
@@ -69,6 +69,7 @@ def prefecture(i):
         "prefecture_id": i + 1,
         "prefecture_latlng": get_latlng(pre_list[i]),
         "ratio": ratio,
+        "zoom_ratio": zoom_list[i],
         "beaches": beaches_schema.dump(beaches),
     }
     return data
