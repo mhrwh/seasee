@@ -24,7 +24,12 @@
         ['Prefecture', 'Value', {role: 'tooltip', p:{html:true}}]
         ];
         for(let i=0; i<prefecture_data.length; i++){ //都道府県のデータを追加
-            let pre = [{v:prefecture_data[i].prefecture}, prefecture_data[i].ratio, prefecture_data[i].beaches[0]];
+            let tip = '';
+            for(let j=0; j<prefecture_data[i].beaches.length; j++){
+                tip += '<p> ' + prefecture_data[i].beaches[j].name + '<p/>';
+            }
+            console.log(tip)
+            let pre = [{v:prefecture_data[i].prefecture}, prefecture_data[i].ratio, tip];
             codes.push(pre);
         }
         
