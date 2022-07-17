@@ -16,8 +16,9 @@
     google.charts.setOnLoadCallback(drawRegionsMap);
     // クリック時の関数
     function selectHandler(reg) {
-        console.log(reg.region);
-        window.location.href = '/prefectures/' + reg.region;
+        if (reg.region!='CN'&&reg.region!='MN'&&reg.region!='KP'&&reg.region!='RU'&&reg.region!='KR'&&reg.region!='TW'&&reg.region!='JP-09'&&reg.region!='JP-10'&&reg.region!='JP-11'&&reg.region!='JP-19'&&reg.region!='JP-20'&&reg.region!='JP-21'&&reg.region!='JP-25'&&reg.region!='JP-29'){
+            window.location.href = '/prefectures/' + reg.region;
+        }
     }
     function drawRegionsMap() {
         const codes = [ //データの型定義　Prefecture:都道府県の識別子(北海道以外は都府県を抜いた名前でなくてはならない)　Value:色分けに使われる　{role: 'tooltip', p:{html:true}}:ホバー情報の内容(htmlでかける)
